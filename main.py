@@ -8,6 +8,7 @@ import posterizer
 import color_print
 import otsu
 import math
+from PIL import ImageEnhance
 from drawille import Canvas
 
 ANTI_FONT_DISTORTION = (2,1)
@@ -49,6 +50,13 @@ def argparser():
                      ,type      = float
                      ,metavar   = 'N'
                      )
+    argp.add_argument('-n', '--contrast'
+                     ,help      = 'Contrast adjustment'
+                     ,default   = None
+                     ,action    = 'store'
+                     ,type      = float
+                     ,metavar   = 'N'
+                     )
     argp.add_argument('image'
                      ,metavar   = 'FILE'
                      ,help      = 'Image file path/url'
@@ -61,6 +69,8 @@ def __main__():
     out = args['output']
 
     orig_img = image.load(args['image']).convert('RGB')
+    if args['contrast'] != None:
+        orig_img = ImageEnhance.Contrast(orig_img).enhance(args['contrast'])
     orig_img = resizer.resize(orig_img, 1, ANTI_FONT_DISTORTION)
     fit_ratio = resizer.fit_in_ratio(orig_img.size, term.size())
     if args['ratio']:
